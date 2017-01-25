@@ -2,8 +2,11 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "HandleManager.hpp"
-#include "Components.hpp"
+#include "Components/Components.hpp"
 #include "Entity.hpp"
+#include "MovementSystem.hpp"
+#include "ComponentFactory.hpp"
+
 #include <numeric>
  
  using namespace ci;
@@ -115,13 +118,20 @@ public:
   } mUniforms;
   
   john::HandleManager mHandleManager;
-  
+  john::MovementSystem mMovementSystem;
+  john::ComponentFactory<john::XyzComponent> mXyzComponentFactory{mHandleManager};
 };
+
+std::shared_ptr<john::XyzComponent> xyzc;
+std::shared_ptr<john::VelocityComponent> velc;
+std::shared_ptr<john::Entity> entity;
+std::shared_ptr<john::Entity> entity2;
+//john::ComponentFactory<john::XyzComponent> xyzComponentFactory;
 
 void GameOfLifeApp::setup()
 {
   // Create a cartesian coordinate component.
-  std::shared_ptr<john::XyzComponent> xyzc = std::make_shared<john::XyzComponent>();
+  xyzc = std::make_shared<john::XyzComponent>();
   
   // Register it with the handle manager.
   // Receive a handle.
@@ -131,7 +141,7 @@ void GameOfLifeApp::setup()
   xyzc->xyz = glm::vec3{1.f};
 
   // Velocity component.
-  std::shared_ptr<john::VelocityComponent> velc = std::make_shared<john::VelocityComponent>();
+  velc = std::make_shared<john::VelocityComponent>();
   auto velocityHdl = mHandleManager.add(static_cast<void*>(velc.get()), john::ComponentTypes::C_VELOCITY);
   velc->velocity = glm::vec3{0.5f};
   
@@ -140,22 +150,25 @@ void GameOfLifeApp::setup()
   components[john::ComponentTypes::C_VELOCITY].second.push_back(velocityHdl);
 
   // Create an entity.
-  std::shared_ptr<john::Entity> entity = std::make_shared<john::Entity>();
+  entity = std::make_shared<john::Entity>();
+  entity->mComponents[john::ComponentTypes::C_XYZ] = xyzHdl;
+  entity->mComponents[john::ComponentTypes::C_VELOCITY] = velocityHdl;
   auto entityHdl = mHandleManager.add(static_cast<void*>(entity.get()), john::ENTITY);
   entity->mHandle = entityHdl;
-  entity->mComponents.push_back(xyzHdl);
-  entity->mComponents.push_back(velocityHdl);
+  
+  auto entityr = mHandleManager.get(entityHdl);
+  //auto e = static_cast<john::Entity*>(entityr);
   
   // Store an entity in the components 'cache'
   // NOTE: this isn't really a cache its just.....ugly
   components[john::ComponentTypes::C_XYZ].first.push_back(entityHdl);
   components[john::ComponentTypes::C_VELOCITY].first.push_back(entityHdl);
-  
+
   // Entity 2.
   using namespace john;
   using namespace std;
-  
-  shared_ptr<Entity> entity2 = make_shared<Entity>();
+
+  entity2 = make_shared<Entity>();
   auto entity2Hdl = mHandleManager.add(static_cast<void*>(entity2.get()), ENTITY);
   entity2->mHandle = entity2Hdl;
   shared_ptr<XyzComponent> xyzc2 = make_shared<XyzComponent>();
@@ -168,10 +181,17 @@ void GameOfLifeApp::setup()
   components[ComponentTypes::C_XYZ].second.push_back(xyz2Hdl);
   components[ComponentTypes::C_VELOCITY].second.push_back(velc2Hdl);
   
-  entity2->mComponents.push_back(xyz2Hdl);
-  entity2->mComponents.push_back(velc2Hdl);
+  entity2->mComponents[john::ComponentTypes::C_XYZ] = xyz2Hdl;
+  entity2->mComponents[john::ComponentTypes::C_VELOCITY] = velc2Hdl;
   components[john::ComponentTypes::C_XYZ].first.push_back(entity2Hdl);
   components[john::ComponentTypes::C_VELOCITY].first.push_back(entity2Hdl);
+  
+  // Register entities with a system.
+  mMovementSystem.registerEntity(entityHdl);
+  mMovementSystem.registerEntity(entity2Hdl);
+  
+  auto s = mXyzComponentFactory.create();
+  s->xyz = glm::vec3{15.f};
   
   mGlsl = gl::GlslProg::create(loadResource("gol.vs"), loadResource("gol.fs"));
   
@@ -277,6 +297,7 @@ void GameOfLifeApp::mouseDown( MouseEvent event )
 
 void GameOfLifeApp::update()
 {
+  mMovementSystem.update(mHandleManager);
 }
 
 void GameOfLifeApp::draw()

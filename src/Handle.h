@@ -43,9 +43,9 @@ namespace john
   
   Handle::operator uint32() const
   {
-   return mType << 27 | mCounter << 12 | mIndex;
+    return mType << 27 | mCounter << 12 | mIndex;
   }
-  
+
   
 }
 #endif 
