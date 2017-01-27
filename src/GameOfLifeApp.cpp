@@ -5,6 +5,7 @@
 #include "Components/Components.hpp"
 #include "Entity.hpp"
 #include "MovementSystem.hpp"
+#include "DrawingSystem.hpp"
 #include "ComponentFactory.hpp"
 #include "Mesh.h"
 
@@ -51,6 +52,7 @@ public:
   
   john::HandleManager mHandleManager;
   john::MovementSystem mMovementSystem;
+  john::DrawingSystem mDrawingSystem;
   john::ComponentFactory<john::XyzComponent> mXyzComponentFactory{mHandleManager};
 };
 
@@ -62,6 +64,12 @@ std::shared_ptr<john::Entity> entity2;
 void GameOfLifeApp::setup()
 {
   john::mesh::cube::calculateCubeNormals();
+  
+  glm::mat4 projMatrix = glm::perspective(50.f, getWindowAspectRatio(), 0.1f, 1000.f);
+  mDrawingSystem.mProjectionMatrix = projMatrix;
+  
+  glm::mat4 viewMatrix = glm::translate(glm::mat4{}, glm::vec3{0.f, 0.f, -100.f});
+  mDrawingSystem.mViewMatrix = viewMatrix;
   
   // Create a cartesian coordinate component.
   xyzc = std::make_shared<john::XyzComponent>();
@@ -128,9 +136,12 @@ void GameOfLifeApp::setup()
   mGlsl = gl::GlslProg::create(loadResource("gol.vs"), loadResource("gol.fs"));
   
   mUniforms.model_matrix = glGetUniformLocation(mGlsl->getHandle(), "model_matrix");
-  mUniforms.proj_matrix = glGetUniformLocation(mGlsl->getHandle(), "proj_matrix");
-  mUniforms.view_matrix = glGetUniformLocation(mGlsl->getHandle(), "view_matrix");
+  //mUniforms.proj_matrix = glGetUniformLocation(mGlsl->getHandle(), "proj_matrix");
+  //mUniforms.view_matrix = glGetUniformLocation(mGlsl->getHandle(), "view_matrix");
   mUniforms.mv_matrix = glGetUniformLocation(mGlsl->getHandle(), "mv_matrix");
+  
+  mDrawingSystem.mProjectionMatrixHandle = glGetUniformLocation(mGlsl->getHandle(), "proj_matrix");
+  mDrawingSystem.mViewMatrixHandle = glGetUniformLocation(mGlsl->getHandle(), "view_matrix");
   
   glGenVertexArrays(1, &mVao);
   glBindVertexArray(mVao);
@@ -189,13 +200,15 @@ void GameOfLifeApp::draw()
   
   mGlsl->bind();
   
-  glm::mat4 projMatrix = glm::perspective(50.f, getWindowAspectRatio(), 0.1f, 1000.f);
-  glUniformMatrix4fv(mUniforms.proj_matrix, 1, GL_FALSE, glm::value_ptr(projMatrix));
+  glUniformMatrix4fv(mDrawingSystem.mProjectionMatrixHandle,
+                     1,
+                     GL_FALSE,
+                     glm::value_ptr(mDrawingSystem.mProjectionMatrix));
+  
   auto seconds = getElapsedSeconds() * 0.01;
   float f = seconds * 0.03;
   
-  auto viewMatrix = glm::translate(glm::mat4{}, glm::vec3{0.f, 0.f, -100.f});
-  glUniformMatrix4fv(mUniforms.view_matrix, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+  glUniformMatrix4fv(mDrawingSystem.mViewMatrixHandle, 1, GL_FALSE, glm::value_ptr(mDrawingSystem.mViewMatrix));
   
   auto translationMatrix = glm::translate(glm::mat4{},
                                           glm::vec3{sinf(2.1f * f) * 0.5f,
@@ -209,7 +222,7 @@ void GameOfLifeApp::draw()
   auto modelMatrix = translationMatrix * rotationMatrix * scaleMatrix * glm::mat4{};
   glUniformMatrix4fv(mUniforms.model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
   
-  auto mvMatrix = viewMatrix * modelMatrix;
+  auto mvMatrix = mDrawingSystem.mViewMatrix * modelMatrix;
   glUniformMatrix4fv(mUniforms.mv_matrix, 1, GL_FALSE, glm::value_ptr(mvMatrix));
   
   glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
