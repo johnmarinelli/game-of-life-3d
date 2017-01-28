@@ -9,7 +9,11 @@ enum ComponentTypes {
   C_BASE,
   C_XYZ,
   C_VELOCITY,
-  C_MODELMAT
+  C_MODELMAT,
+  C_NORMALS,
+  C_VERTICES,
+  C_INDICES,
+  C_COLORS
 };
 
 struct Component {
@@ -42,6 +46,30 @@ struct ModelMatrixComponent : public Component {
   ScaleMatrixComponent scaleComponent;
   
   glm::mat4 model;
+};
+
+template <int n>
+struct NormalsComponent : public Component {
+  GLfloat normals[n];
+};
+
+template <int n>
+struct VerticesComponent : public Component {
+  GLfloat vertices[n];
+};
+  
+template <int n>
+struct IndicesComponent : public Component {
+  GLushort indices[n];
+};
+  
+template <int n>
+struct ColorsComponent : public Component {
+  GLfloat colors[n];
+};
+  
+struct GlVertexComponent : public Component {
+
 };
 
 }

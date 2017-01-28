@@ -130,9 +130,6 @@ void GameOfLifeApp::setup()
   mMovementSystem.registerEntity(entityHdl);
   mMovementSystem.registerEntity(entity2Hdl);
   
-  auto s = mXyzComponentFactory.create();
-  s->xyz = glm::vec3{15.f};
-  
   mGlsl = gl::GlslProg::create(loadResource("gol.vs"), loadResource("gol.fs"));
   
   mUniforms.model_matrix = glGetUniformLocation(mGlsl->getHandle(), "model_matrix");
@@ -147,27 +144,30 @@ void GameOfLifeApp::setup()
   glBindVertexArray(mVao);
   
   glGenBuffers(1, &mCubeVertices);
+  glGenBuffers(1, &mCubeIBO);
+  glGenBuffers(1, &mCubeNormals);
+  glGenBuffers(1, &mCubeColors);
+
   glBindBuffer(GL_ARRAY_BUFFER, mCubeVertices);
   glBufferData(GL_ARRAY_BUFFER, sizeof(mesh::cube::vertices), mesh::cube::vertices, GL_STATIC_DRAW);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
   glEnableVertexAttribArray(0);
   
-  glGenBuffers(1, &mCubeIBO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mCubeIBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(mesh::cube::indexOrder), mesh::cube::indexOrder, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+               sizeof(mesh::cube::indexOrder),
+               mesh::cube::indexOrder, GL_STATIC_DRAW);
   
   glEnable(GL_CULL_FACE);
   glFrontFace(GL_CW);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
   
-  glGenBuffers(1, &mCubeNormals);
   glBindBuffer(GL_ARRAY_BUFFER, mCubeNormals);
   glBufferData(GL_ARRAY_BUFFER, sizeof(mesh::cube::rawNormals), mesh::cube::rawNormals, GL_STATIC_DRAW);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
   glEnableVertexAttribArray(1);
   
-  glGenBuffers(1, &mCubeColors);
   glBindBuffer(GL_ARRAY_BUFFER, mCubeColors);
   glBufferData(GL_ARRAY_BUFFER, sizeof(cube_colors), cube_colors, GL_STATIC_DRAW);
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
@@ -225,7 +225,17 @@ void GameOfLifeApp::draw()
   auto mvMatrix = mDrawingSystem.mViewMatrix * modelMatrix;
   glUniformMatrix4fv(mUniforms.mv_matrix, 1, GL_FALSE, glm::value_ptr(mvMatrix));
   
-  glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+  //glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+  
+  for (int i = 0; i < 100; ++i) {
+    auto modelMatrix2 = glm::translate(glm::mat4{}, glm::vec3{i * 0.1f, 0.f, 1.f}) *
+    rotationMatrix *
+    glm::scale(glm::mat4{}, glm::vec3{0.5f}) *
+    glm::mat4{};
+    
+    glUniformMatrix4fv(mUniforms.model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix2));
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+  }
 }
 
 CINDER_APP( GameOfLifeApp, RendererGl )
