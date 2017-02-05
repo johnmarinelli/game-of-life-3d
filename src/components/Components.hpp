@@ -2,30 +2,17 @@
 #define Components_hpp
 
 #include <stdio.h>
+#include <cstdint>
 
 namespace john {
   
 enum ComponentTypes {
   C_BASE,
-  C_XYZ,
-  C_VELOCITY,
-  C_MODELMAT,
-  C_NORMALS,
-  C_VERTICES,
-  C_INDICES,
-  C_COLORS
+  C_MODELMAT
 };
 
 struct Component {
   Handle handle;
-};
-
-struct XyzComponent : public Component {
-  glm::vec3 xyz;
-};
-  
-struct VelocityComponent : public Component {
-  glm::vec3 velocity;
 };
   
 struct RotationMatrixComponent : public Component {
@@ -44,34 +31,8 @@ struct ModelMatrixComponent : public Component {
   RotationMatrixComponent rotationComponent;
   TranslationMatrixComponent translationComponent;
   ScaleMatrixComponent scaleComponent;
-  
-  glm::mat4 model;
-};
-
-template <int n>
-struct NormalsComponent : public Component {
-  GLfloat normals[n];
-};
-
-template <int n>
-struct VerticesComponent : public Component {
-  GLfloat vertices[n];
 };
   
-template <int n>
-struct IndicesComponent : public Component {
-  GLushort indices[n];
-};
-  
-template <int n>
-struct ColorsComponent : public Component {
-  GLfloat colors[n];
-};
-  
-struct GlVertexComponent : public Component {
-
-};
-
 }
 
 #endif

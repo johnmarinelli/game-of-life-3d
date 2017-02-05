@@ -29,6 +29,7 @@ namespace john {
  
  mHandleManager.remove(hdl);
  */
+  
 class HandleManager {
 public:
   

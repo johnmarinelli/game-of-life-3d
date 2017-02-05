@@ -12,13 +12,18 @@ namespace john {
   class DrawingSystem {
   public:
     DrawingSystem();
+    
+    void initialize(const glm::mat4& projMatrix, const glm::mat4& viewMatrix);
     void registerEntity(const john::Handle& handle);
-    void update(const john::HandleManager& handleManager);
+    void perform(const john::HandleManager& handleManager, double elapsedSeconds);
     
     glm::mat4 mProjectionMatrix;
     glm::mat4 mViewMatrix;
+                    
     GLuint mProjectionMatrixHandle;
     GLuint mViewMatrixHandle;
+    GLuint mModelMatrixHandle;
+    GLuint mModelViewMatrixHandle;
     
   private:
     std::vector<john::Handle> mHandles;
