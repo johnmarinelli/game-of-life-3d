@@ -8,11 +8,16 @@
 #include "DrawingSystem.hpp"
 #include "ComponentFactory.hpp"
 #include "Mesh.h"
+#include "EntityFactory.hpp"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
- 
+
+const int ROWS = 5;
+const int COLS = 4;
+const int DEPTH = 5;
+
 static const GLfloat cube_colors[] = {
  // front colors
  1.0, 0.0, 0.0,
@@ -28,7 +33,7 @@ static const GLfloat cube_colors[] = {
 
 class GameOfLifeApp : public App {
 public:
-  void initEntity(const glm::mat4& translate = glm::mat4{});
+  //void initEntity(const glm::mat4& translate = glm::mat4{});
   void setup() override;
   void keyDown(cinder::app::KeyEvent event) override;
   void mouseDown( MouseEvent event ) override;
@@ -49,33 +54,12 @@ public:
   john::DrawingSystem mDrawingSystem;
   john::GameOfLifeSystem mGameOfLifeSystem;
   
+  john::EntityFactory mEntityFactory{mHandleManager};
   std::vector<std::shared_ptr<john::Entity>> mEntities;
 
-  john::ComponentFactory<john::ModelMatrixComponent> mModelMatrixComponentFactory{mHandleManager};
+  john::ComponentFactory<john::PositionComponent> mPositionComponentFactory{mHandleManager};
 
 };
-
-//std::shared_ptr<john::Entity> entity;
-
-void GameOfLifeApp::initEntity(const glm::mat4& translate)
-{
-  auto entity = std::make_shared<john::Entity>();
-  auto entityHdl = mHandleManager.add(static_cast<void*>(entity.get()), john::ENTITY);
-  entity->mHandle = entityHdl;
-  
-  auto modelMatrixComponent = mModelMatrixComponentFactory.create();
-  modelMatrixComponent->rotationComponent.rotation = glm::mat4{};
-  modelMatrixComponent->scaleComponent.scale = glm::mat4{};
-  modelMatrixComponent->translationComponent.translation = translate;//glm::mat4{1.f};
-  
-  auto modelMatrixComponentHdl = mHandleManager.add(static_cast<void*>(modelMatrixComponent.get()), john::ComponentTypes::C_MODELMAT);
-  modelMatrixComponent->handle = modelMatrixComponentHdl;
-  
-  entity->mComponents[john::ComponentTypes::C_MODELMAT] = modelMatrixComponentHdl;
-  
-  mDrawingSystem.registerEntity(entityHdl);
-  mEntities.push_back(entity);
-}
 
 void GameOfLifeApp::setup()
 {
@@ -86,9 +70,25 @@ void GameOfLifeApp::setup()
   
   mDrawingSystem.initialize(projMatrix, viewMatrix);
   
-  initEntity(glm::mat4{1.f});
-  initEntity(glm::translate(glm::mat4{}, glm::vec3{1.f, 2.f, 0.f}));
-
+  float marginWidth = 0.5f;
+  
+  for (auto i = 0; i < ROWS; ++i) {
+    for (auto j = 0; j < COLS; ++j) {
+      auto entityHdl = mEntityFactory.addEntity();
+      auto entity = static_cast<john::Entity*>(mHandleManager.get(entityHdl));
+      
+      auto positionComponent = mPositionComponentFactory.create();
+      positionComponent->rotationComponent.rotation = glm::mat4{};
+      positionComponent->scaleComponent.scale = glm::mat4{};
+      positionComponent->translationComponent.translation = glm::translate(glm::mat4{}, glm::vec3{i + marginWidth, j + marginWidth, 1});//glm::mat4{};
+      
+      auto positionComponentHdl = mHandleManager.add(static_cast<void*>(positionComponent.get()), john::ComponentTypes::C_POSITION);
+      entity->mComponents[john::ComponentTypes::C_POSITION] = positionComponentHdl;
+      
+      mDrawingSystem.registerEntity(entityHdl);
+    }
+  }
+  
   mGlsl = gl::GlslProg::create(loadResource("gol.vs"), loadResource("gol.fs"));
   
   mUniforms.model_matrix = glGetUniformLocation(mGlsl->getHandle(), "model_matrix");

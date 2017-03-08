@@ -77,6 +77,7 @@ template<typename T>
   void* outAsVoid;
   const bool rv = get(hdl, outAsVoid);
   out = static_cast<T>(outAsVoid);
+  return rv;
 }
 
 }

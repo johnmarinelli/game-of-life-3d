@@ -38,27 +38,27 @@ namespace john {
                        glm::value_ptr(mProjectionMatrix));
     
     auto seconds = elapsedSeconds * 0.01;
-    float f = seconds * 0.03;
         
     for (const auto& handle : mHandles) {
       auto entityr = handleManager.get(handle);
       auto entity = static_cast<Entity*>(entityr);
       auto components = entity->mComponents;
       
-      auto modelMatrixHandle = components[john::ComponentTypes::C_MODELMAT];      
+      auto modelMatrixHandle = components[john::ComponentTypes::C_POSITION];
       
-      john::ModelMatrixComponent* modelMatrixComponent = static_cast<john::ModelMatrixComponent*>(handleManager.get(modelMatrixHandle));
-      auto rotate = modelMatrixComponent->rotationComponent.rotation;
-      auto scale = modelMatrixComponent->scaleComponent.scale;
+      john::PositionComponent* positionComponent = static_cast<john::PositionComponent*>(handleManager.get(modelMatrixHandle));
+      auto rotate = positionComponent->rotationComponent.rotation;
+      auto scale = positionComponent->scaleComponent.scale;
       /*auto translate = glm::translate(glm::mat4{},
                                       glm::vec3{
                                         sinf(2.1f * f) * 0.5f,
                                         cosf(1.7f * f) * 0.5f,
                                         sinf(1.3f * f) * cosf(1.5f * f) * 2.f
                                       });*/
-      auto translate = modelMatrixComponent->translationComponent.translation;
+      auto translate = positionComponent->translationComponent.translation;
+      auto model = positionComponent->modelComponent.model;
       
-      auto modelMatrix = translate * rotate * scale * glm::mat4{};
+      auto modelMatrix = translate * rotate * scale * model;
       auto mvMatrix = mViewMatrix * modelMatrix;
       
       glUniformMatrix4fv(mModelMatrixHandle, 1, GL_FALSE, glm::value_ptr(modelMatrix));

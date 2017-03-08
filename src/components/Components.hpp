@@ -8,11 +8,15 @@ namespace john {
   
 enum ComponentTypes {
   C_BASE,
-  C_MODELMAT
+  C_POSITION
 };
 
 struct Component {
   Handle handle;
+};
+  
+struct ModelMatrixComponent : public Component {
+  glm::mat4 model;
 };
   
 struct RotationMatrixComponent : public Component {
@@ -27,10 +31,11 @@ struct ScaleMatrixComponent : public Component {
   glm::mat4 scale;
 };
 
-struct ModelMatrixComponent : public Component {
+struct PositionComponent : public Component {
   RotationMatrixComponent rotationComponent;
   TranslationMatrixComponent translationComponent;
   ScaleMatrixComponent scaleComponent;
+  ModelMatrixComponent modelComponent;
 };
   
 }

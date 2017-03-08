@@ -17,14 +17,13 @@ public:
     
   }
   
-  std::vector<std::shared_ptr<T>> mComponents;
-  
   template<typename... Args>
   std::shared_ptr<T> create(Args... args) {
     mComponents.push_back(std::make_shared<T>(args...));
     return mComponents.back();
   }
   
+  std::vector<std::shared_ptr<T>> mComponents;
   john::HandleManager* mHandleManagerRef;
 };
 }
