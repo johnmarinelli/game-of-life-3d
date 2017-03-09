@@ -9,8 +9,6 @@ uniform mat4 view_matrix;
 uniform mat4 proj_matrix;
 uniform mat4 mv_matrix;
 
-uniform vec3 camera_position;
-
 out vec4 vs_color;
 
 out vec3 position_worldspace;
