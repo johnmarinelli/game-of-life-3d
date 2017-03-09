@@ -13,7 +13,6 @@ namespace john {
   
 class GameOfLifeSystem {
   
-  
   void registerEntity(const john::Handle& handle);
   void perform(const john::HandleManager& handleManager, double elapsedSeconds);
   
