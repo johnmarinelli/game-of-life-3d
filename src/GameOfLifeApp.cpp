@@ -15,7 +15,7 @@ using namespace ci::app;
 using namespace std;
 
 const int ROWS = 5;
-const int COLS = 4;
+const int COLS = 5;
 const int DEPTH = 5;
 
 static const GLfloat cube_colors[] = {
@@ -33,7 +33,6 @@ static const GLfloat cube_colors[] = {
 
 class GameOfLifeApp : public App {
 public:
-  //void initEntity(const glm::mat4& translate = glm::mat4{});
   void setup() override;
   void keyDown(cinder::app::KeyEvent event) override;
   void mouseDown( MouseEvent event ) override;
@@ -56,7 +55,7 @@ public:
   
   john::EntityFactory mEntityFactory{mHandleManager};
   std::vector<std::shared_ptr<john::Entity>> mEntities;
-
+  
   john::ComponentFactory<john::PositionComponent> mPositionComponentFactory{mHandleManager};
 
 };
@@ -69,18 +68,24 @@ void GameOfLifeApp::setup()
   glm::mat4 viewMatrix = glm::translate(glm::mat4{}, glm::vec3{0.f, 0.f, -100.f});
   
   mDrawingSystem.initialize(projMatrix, viewMatrix);
+
+  auto size = Display::getMainDisplay()->getSize();
   
-  float marginWidth = 0.5f;
+  auto xScale = (size.x / (float) COLS) * 0.001;
+  auto yScale = (size.y / (float) ROWS) * 0.001;
+  auto scale = (xScale + yScale) / 2.f;
   
-  for (auto i = 0; i < ROWS; ++i) {
-    for (auto j = 0; j < COLS; ++j) {
+  float marginWidth = 1.f * scale;
+  
+  for (auto i = 0; i < ROWS; i++) {
+    for (auto j = 0; j < COLS; j++) {
       auto entityHdl = mEntityFactory.addEntity();
       auto entity = static_cast<john::Entity*>(mHandleManager.get(entityHdl));
       
       auto positionComponent = mPositionComponentFactory.create();
       positionComponent->rotationComponent.rotation = glm::mat4{};
-      positionComponent->scaleComponent.scale = glm::mat4{};
-      positionComponent->translationComponent.translation = glm::translate(glm::mat4{}, glm::vec3{i + marginWidth, j + marginWidth, 1});//glm::mat4{};
+      positionComponent->scaleComponent.scale = glm::scale(glm::mat4{}, glm::vec3{scale, scale, scale});
+      positionComponent->translationComponent.translation = glm::translate(glm::mat4{}, glm::vec3{j + marginWidth, i + marginWidth, 1});//glm::mat4{};
       
       auto positionComponentHdl = mHandleManager.add(static_cast<void*>(positionComponent.get()), john::ComponentTypes::C_POSITION);
       entity->mComponents[john::ComponentTypes::C_POSITION] = positionComponentHdl;
@@ -136,6 +141,10 @@ void GameOfLifeApp::setup()
 void GameOfLifeApp::keyDown(cinder::app::KeyEvent event)
 {
   auto input = event.getChar();
+  
+  switch (input) {
+    default: break;
+  }
 }
 
 void GameOfLifeApp::mouseDown( MouseEvent event )
