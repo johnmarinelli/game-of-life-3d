@@ -49,12 +49,6 @@ namespace john {
       john::PositionComponent* positionComponent = static_cast<john::PositionComponent*>(handleManager.get(modelMatrixHandle));
       auto rotate = positionComponent->rotationComponent.rotation;
       auto scale = positionComponent->scaleComponent.scale;
-      /*auto translate = glm::translate(glm::mat4{},
-                                      glm::vec3{
-                                        sinf(2.1f * f) * 0.5f,
-                                        cosf(1.7f * f) * 0.5f,
-                                        sinf(1.3f * f) * cosf(1.5f * f) * 2.f
-                                      });*/
       auto translate = positionComponent->translationComponent.translation;
       auto model = positionComponent->modelComponent.model;
       
