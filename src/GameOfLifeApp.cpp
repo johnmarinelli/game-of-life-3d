@@ -60,7 +60,7 @@ public:
 
 void GameOfLifeApp::setup()
 {
-  setFrameRate(1.0);
+  setFrameRate(2.0);
   john::mesh::cube::calculateCubeNormals();
   
   glm::mat4 projMatrix = glm::perspective(50.f, getWindowAspectRatio(), 0.1f, 1000.f);
@@ -97,9 +97,11 @@ void GameOfLifeApp::setup()
       // gol state system
       auto stateComponent = mStateComponentFactory.create();
       
+      if (i == 1 && j == 1) stateComponent->on = true;
+      if (i == 2 && j == 2) stateComponent->on = true;
+      if (i == 3 && j == 0) stateComponent->on = true;
+      if (i == 3 && j == 1) stateComponent->on = true;
       if (i == 3 && j == 2) stateComponent->on = true;
-      if (i == 3 && j == 3) stateComponent->on = true;
-      if (i == 3 && j == 4) stateComponent->on = true;
       
       auto stateComponentHdl = mHandleManager.add(static_cast<void*>(stateComponent.get()), john::ComponentTypes::C_STATE);
       
