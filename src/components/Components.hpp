@@ -8,7 +8,9 @@ namespace john {
   
 enum ComponentTypes {
   C_BASE,
-  C_POSITION
+  C_POSITION,
+  C_GRIDPOSITION,
+  C_STATE
 };
 
 struct Component {
@@ -36,6 +38,15 @@ struct PositionComponent : public Component {
   TranslationMatrixComponent translationComponent;
   ScaleMatrixComponent scaleComponent;
   ModelMatrixComponent modelComponent;
+};
+  
+struct GridPositionComponent : public Component {
+  glm::vec3 xyz;
+};
+  
+struct StateComponent : public Component {
+  bool on;
+  StateComponent() : on(false) {}
 };
   
 }

@@ -11,6 +11,7 @@
 #define HandleManager_hpp
 
 #include <stdio.h>
+#include "Constants.h"
 #include "Handle.h"
 
 namespace john {
@@ -33,7 +34,7 @@ namespace john {
 class HandleManager {
 public:
   
-  enum { MaxEntries = 4096 }; // 2 ^ 12
+  enum { MaxEntries = john::constants::MAX_HANDLES }; // 2 ^ 12
   
   HandleManager();
   

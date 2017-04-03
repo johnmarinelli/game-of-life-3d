@@ -44,21 +44,26 @@ namespace john {
       auto entity = static_cast<Entity*>(entityr);
       auto components = entity->mComponents;
       
-      auto modelMatrixHandle = components[john::ComponentTypes::C_POSITION];
+      auto stateComponentHdl = entity->mComponents[john::ComponentTypes::C_STATE];
+      auto stateComponent = static_cast<john::StateComponent*>(handleManager.get(stateComponentHdl));
       
-      john::PositionComponent* positionComponent = static_cast<john::PositionComponent*>(handleManager.get(modelMatrixHandle));
-      auto rotate = positionComponent->rotationComponent.rotation;
-      auto scale = positionComponent->scaleComponent.scale;
-      auto translate = positionComponent->translationComponent.translation;
-      auto model = positionComponent->modelComponent.model;
+      if (stateComponent->on) {        
+        auto modelMatrixHandle = components[john::ComponentTypes::C_POSITION];
+        
+        john::PositionComponent* positionComponent = static_cast<john::PositionComponent*>(handleManager.get(modelMatrixHandle));
+        auto rotate = positionComponent->rotationComponent.rotation;
+        auto scale = positionComponent->scaleComponent.scale;
+        auto translate = positionComponent->translationComponent.translation;
+        auto model = positionComponent->modelComponent.model;
+        
+        auto modelMatrix = translate * rotate * scale * model;
+        auto mvMatrix = mViewMatrix * modelMatrix;
       
-      auto modelMatrix = translate * rotate * scale * model;
-      auto mvMatrix = mViewMatrix * modelMatrix;
+        glUniformMatrix4fv(mModelMatrixHandle, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+        glUniformMatrix4fv(mModelViewMatrixHandle, 1, GL_FALSE, glm::value_ptr(mvMatrix));
       
-      glUniformMatrix4fv(mModelMatrixHandle, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-      glUniformMatrix4fv(mModelViewMatrixHandle, 1, GL_FALSE, glm::value_ptr(mvMatrix));
-      
-      glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
+      }
     }
   }
   
