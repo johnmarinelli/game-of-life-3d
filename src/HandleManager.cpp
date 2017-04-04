@@ -1,6 +1,5 @@
 #include "HandleManager.hpp"
 
-
 namespace john {
 
 HandleManager::HandleEntry::HandleEntry() :

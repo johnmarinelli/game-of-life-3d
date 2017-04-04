@@ -1,9 +1,10 @@
 #include "Camera.hpp"
+#include "Constants.h"
 
 namespace john {
   Camera::Camera() :
-  mViewMatrix(glm::mat4{0.f}),
-  mEye(glm::vec3{0.f}),
+  mEye(glm::vec3{0.f, 0.f, -100.f}),
+  mViewMatrix(glm::lookAt(mEye, glm::vec3{0.f,0.f,0.f}, glm::vec3{0,1,0})),
   mRoll(0.f),
   mYaw(0.f),
   mPitch(0.f),
@@ -68,9 +69,7 @@ namespace john {
     glm::vec3 forward{mViewMatrix[0][2], mViewMatrix[1][2], mViewMatrix[2][2]};
     glm::vec3 strafe{mViewMatrix[0][0], mViewMatrix[1][0], mViewMatrix[2][0]};
     
-    const float speed = 0.12f;
-    // forward vector is negative to look forward
-    mEye += (dz * forward + dx * strafe) * speed;
+    mEye += (dz * forward + dx * strafe) * john::constants::CAMERA_SPEED;
     
     this->UpdateView();
   }
@@ -79,11 +78,9 @@ namespace john {
     if (leftDown) {
       // delta
       glm::vec2 mouseDelta = glm::vec2{x,y} - mMousePosition;
-      const float mouseXSensitivity = 0.525f;
-      const float mouseYSensitivity = 0.525f;
-      
-      mYaw += mouseXSensitivity * mouseDelta.x;
-      mPitch += mouseYSensitivity * mouseDelta.y;
+
+      mYaw += john::constants::MOUSE_X_SENSITIVITY * mouseDelta.x;
+      mPitch += john::constants::MOUSE_Y_SENSITIVITY * mouseDelta.y;
       
       mMousePosition = glm::vec2{x, y};   
       this->UpdateView();

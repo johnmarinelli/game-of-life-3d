@@ -16,6 +16,9 @@ namespace john {
     const int COLS = 10;
     const int DEPTH = 3;
     const int NUM_NEIGHBORS = 27;
+    const float CAMERA_SPEED = 0.12;
+    const float MOUSE_X_SENSITIVITY = 0.525f;
+    const float MOUSE_Y_SENSITIVITY = 0.525f;
     enum { MAX_HANDLES = 4096 };
     
   }
