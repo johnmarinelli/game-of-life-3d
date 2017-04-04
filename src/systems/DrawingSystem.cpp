@@ -10,10 +10,8 @@
 namespace john {
   
   DrawingSystem::DrawingSystem() :
-    mCameraRef(nullptr),
-    mViewMatrix(glm::mat4{0.f})
-  {
-  }
+    mCameraRef(nullptr)
+  {}
   
   void DrawingSystem::initialize(const glm::mat4 &projMatrix, john::Camera& camera)
   {
@@ -28,14 +26,14 @@ namespace john {
   
   void DrawingSystem::perform(const john::HandleManager& handleManager, double elapsedSeconds)
   {
-    mViewMatrix = mCameraRef->mViewMatrix;
+    auto viewMatrix = mCameraRef->mViewMatrix;
     static const GLfloat one = 1.f;
     static const GLfloat bg[] = {0.f, 0.0f, 0.f, 1.f};
     
     glClearBufferfv(GL_COLOR, 0, bg);
     glClearBufferfv(GL_DEPTH, 0, &one);
     
-    glUniformMatrix4fv(mViewMatrixHandle, 1, GL_FALSE, glm::value_ptr(mViewMatrix));
+    glUniformMatrix4fv(mViewMatrixHandle, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
     glUniformMatrix4fv(mProjectionMatrixHandle,
                        1,
@@ -62,7 +60,7 @@ namespace john {
         auto model = positionComponent->modelComponent.model;
         
         auto modelMatrix = translate * rotate * scale * model;
-        auto mvMatrix = mViewMatrix * modelMatrix;
+        auto mvMatrix = viewMatrix * modelMatrix;
       
         glUniformMatrix4fv(mModelMatrixHandle, 1, GL_FALSE, glm::value_ptr(modelMatrix));
         glUniformMatrix4fv(mModelViewMatrixHandle, 1, GL_FALSE, glm::value_ptr(mvMatrix));

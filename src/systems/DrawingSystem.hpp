@@ -19,7 +19,6 @@ namespace john {
     void perform(const john::HandleManager& handleManager, double elapsedSeconds);
     
     glm::mat4 mProjectionMatrix;
-    glm::mat4 mViewMatrix;
                     
     GLuint mProjectionMatrixHandle;
     GLuint mViewMatrixHandle;
