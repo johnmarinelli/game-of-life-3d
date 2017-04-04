@@ -20,7 +20,9 @@ HandleManager::HandleEntry::HandleEntry(uint32 nextFreeIndex) :
 {
 }
   
-HandleManager::HandleManager()
+HandleManager::HandleManager() :
+  mActiveEntryCount(0),
+  mFirstFreeEntry(0)
 {
   reset();
 }

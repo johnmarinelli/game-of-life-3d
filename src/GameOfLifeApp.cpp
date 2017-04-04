@@ -68,7 +68,6 @@ void GameOfLifeApp::setup()
   
   glm::mat4 projMatrix = glm::perspective(50.f, getWindowAspectRatio(), 0.1f, 1000.f);
   mCamera = john::Camera{glm::vec3{0,0,-50}, glm::vec3{0,0,0}, glm::vec3{0,1,0}};
-  glm::mat4 viewMatrix = mCamera.mViewMatrix;
   
   mDrawingSystem.initialize(projMatrix, mCamera);
 
