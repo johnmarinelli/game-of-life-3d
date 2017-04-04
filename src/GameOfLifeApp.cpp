@@ -6,9 +6,9 @@
 #include "Entity.hpp"
 #include "systems/GameOfLifeSystem.hpp"
 #include "systems/DrawingSystem.hpp"
-#include "ComponentFactory.hpp"
+#include "factories/ComponentFactory.hpp"
 #include "Mesh.h"
-#include "EntityFactory.hpp"
+#include "factories/EntityFactory.hpp"
 #include "Camera.hpp"
 
 using namespace ci;
