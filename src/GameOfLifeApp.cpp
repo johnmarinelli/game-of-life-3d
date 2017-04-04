@@ -185,8 +185,7 @@ void GameOfLifeApp::mouseDrag(MouseEvent event)
 
 void GameOfLifeApp::update()
 {
-  mGameOfLifeSystem.perform(mHandleManager, 0.0);
-  mDrawingSystem.mViewMatrix = mCamera.mViewMatrix;
+  mGameOfLifeSystem.perform(mHandleManager, 0.0);  
 }
 
 void GameOfLifeApp::draw()
