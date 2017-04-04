@@ -64,7 +64,7 @@ void GameOfLifeApp::setup()
   john::mesh::cube::calculateCubeNormals();
   
   glm::mat4 projMatrix = glm::perspective(50.f, getWindowAspectRatio(), 0.1f, 1000.f);
-  glm::mat4 viewMatrix = glm::translate(glm::mat4{}, glm::vec3{0.f, 0.f, -100.f});
+  glm::mat4 viewMatrix = glm::lookAt(glm::vec3{0,0,-50}, glm::vec3{0,0,0}, glm::vec3{0,1,0});
   
   mDrawingSystem.initialize(projMatrix, viewMatrix);
 
@@ -76,42 +76,43 @@ void GameOfLifeApp::setup()
   
   float marginWidth = 1.f * scale;
   
-  for (auto i = 0; i < john::constants::ROWS; i++) {
-    for (auto j = 0; j < john::constants::COLS; j++) {
-      auto entityHdl = mEntityFactory.addEntity();
-      auto entity = static_cast<john::Entity*>(mHandleManager.get(entityHdl));
-      
-      auto positionComponent = mPositionComponentFactory.create();
-      positionComponent->rotationComponent.rotation = glm::mat4{};
-      positionComponent->scaleComponent.scale = glm::scale(glm::mat4{}, glm::vec3{scale, scale, scale});
-      positionComponent->translationComponent.translation = glm::translate(glm::mat4{}, glm::vec3{j + marginWidth, i + marginWidth, 1});
-      
-      // gol coordinate system
-      auto gridPositionComponent = mGridPositionComponentFactory.create();
-      gridPositionComponent->xyz = glm::vec3{j, i, 0};
-      auto positionComponentHdl = mHandleManager.add(static_cast<void*>(positionComponent.get()), john::ComponentTypes::C_POSITION);
-      entity->mComponents[john::ComponentTypes::C_POSITION] = positionComponentHdl;
-      
-      auto gridPositionComponentHdl = mHandleManager.add(static_cast<void*>(gridPositionComponent.get()), john::ComponentTypes::C_GRIDPOSITION);
-      
-      // gol state system
-      auto stateComponent = mStateComponentFactory.create();
-      
-      if (i == 1 && j == 1) stateComponent->on = true;
-      if (i == 2 && j == 2) stateComponent->on = true;
-      if (i == 3 && j == 0) stateComponent->on = true;
-      if (i == 3 && j == 1) stateComponent->on = true;
-      if (i == 3 && j == 2) stateComponent->on = true;
-      
-      auto stateComponentHdl = mHandleManager.add(static_cast<void*>(stateComponent.get()), john::ComponentTypes::C_STATE);
-      
-      entity->mComponents[john::ComponentTypes::C_POSITION] = positionComponentHdl;
-      entity->mComponents[john::ComponentTypes::C_GRIDPOSITION] = gridPositionComponentHdl;
-      entity->mComponents[john::ComponentTypes::C_STATE] = stateComponentHdl;
-      
-      mDrawingSystem.registerEntity(entityHdl);
-      mGameOfLifeSystem.registerEntity(entityHdl);
-      
+  for (auto k = 0; k < john::constants::DEPTH; k++) {
+    for (auto i = 0; i < john::constants::ROWS; i++) {
+      for (auto j = 0; j < john::constants::COLS; j++) {
+        auto entityHdl = mEntityFactory.addEntity();
+        auto entity = static_cast<john::Entity*>(mHandleManager.get(entityHdl));
+        
+        auto positionComponent = mPositionComponentFactory.create();
+        positionComponent->rotationComponent.rotation = glm::mat4{};
+        positionComponent->scaleComponent.scale = glm::scale(glm::mat4{}, glm::vec3{scale, scale, scale});
+        positionComponent->translationComponent.translation = glm::translate(glm::mat4{}, glm::vec3{j + marginWidth, i + marginWidth, k + marginWidth});
+        
+        // gol coordinate system
+        auto gridPositionComponent = mGridPositionComponentFactory.create();
+        gridPositionComponent->xyz = glm::vec3{j, i, k};
+        auto positionComponentHdl = mHandleManager.add(static_cast<void*>(positionComponent.get()), john::ComponentTypes::C_POSITION);
+        entity->mComponents[john::ComponentTypes::C_POSITION] = positionComponentHdl;
+        
+        auto gridPositionComponentHdl = mHandleManager.add(static_cast<void*>(gridPositionComponent.get()), john::ComponentTypes::C_GRIDPOSITION);
+        
+        // gol state system
+        auto stateComponent = mStateComponentFactory.create();
+        
+        if (i == 1 && j == 1) stateComponent->on = true;
+        if (i == 2 && j == 2) stateComponent->on = true;
+        if (i == 3 && j == 0) stateComponent->on = true;
+        if (i == 3 && j == 1) stateComponent->on = true;
+        if (i == 3 && j == 2) stateComponent->on = true;
+        
+        auto stateComponentHdl = mHandleManager.add(static_cast<void*>(stateComponent.get()), john::ComponentTypes::C_STATE);
+        
+        entity->mComponents[john::ComponentTypes::C_POSITION] = positionComponentHdl;
+        entity->mComponents[john::ComponentTypes::C_GRIDPOSITION] = gridPositionComponentHdl;
+        entity->mComponents[john::ComponentTypes::C_STATE] = stateComponentHdl;
+        
+        mDrawingSystem.registerEntity(entityHdl);
+        mGameOfLifeSystem.registerEntity(entityHdl);
+      }
     }
   }
   

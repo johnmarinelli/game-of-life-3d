@@ -14,7 +14,7 @@ namespace john {
     
     const int ROWS = 10;
     const int COLS = 10;
-    const int DEPTH = 1;
+    const int DEPTH = 3;
     const int NUM_NEIGHBORS = 27;
     enum { MAX_HANDLES = 4096 };
     
