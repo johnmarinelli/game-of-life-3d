@@ -32,9 +32,6 @@ class GameOfLifeApp : public App {
 public:
   void setup() override;
   void keyDown(cinder::app::KeyEvent event) override;
-  //void mouseDown(MouseEvent event) override;
-  //void mouseUp(MouseEvent event) override;
-  //void mouseMove(MouseEvent event) override;
   void mouseDrag(MouseEvent event) override;
   void update() override;
   void draw() override;
@@ -89,17 +86,20 @@ void GameOfLifeApp::setup()
         auto entityHdl = mEntityFactory.addEntity();
         auto entity = static_cast<john::Entity*>(mHandleManager.get(entityHdl));
         
-        auto positionComponent = mPositionComponentFactory.create();
-        positionComponent->rotationComponent.rotation = glm::mat4{};
-        positionComponent->scaleComponent.scale = glm::scale(glm::mat4{}, glm::vec3{scale, scale, scale});
-        positionComponent->translationComponent.translation = glm::translate(glm::mat4{}, glm::vec3{j + marginWidth, i + marginWidth, k + marginWidth});
+        auto rotation = glm::mat4{};
+        auto scaleVec = glm::scale(glm::mat4{}, glm::vec3{scale, scale, scale});
+        auto translation = glm::translate(glm::mat4{},
+                                          glm::vec3{j + marginWidth, i + marginWidth, k + marginWidth});
         
-        // gol coordinate system
-        auto gridPositionComponent = mGridPositionComponentFactory.create();
-        gridPositionComponent->xyz = glm::vec3{j, i, k};
+        auto positionComponent = mPositionComponentFactory.create(rotation,
+                                                                  translation,
+                                                                  scaleVec, glm::mat4{1.f});
+        
         auto positionComponentHdl = mHandleManager.add(static_cast<void*>(positionComponent.get()), john::ComponentTypes::C_POSITION);
         entity->mComponents[john::ComponentTypes::C_POSITION] = positionComponentHdl;
         
+        // gol coordinate system
+        auto gridPositionComponent = mGridPositionComponentFactory.create(glm::vec3{j,i,k});
         auto gridPositionComponentHdl = mHandleManager.add(static_cast<void*>(gridPositionComponent.get()), john::ComponentTypes::C_GRIDPOSITION);
         
         // gol state system
@@ -176,24 +176,6 @@ void GameOfLifeApp::keyDown(cinder::app::KeyEvent event)
     default: break;
   }
 }
-
-/*void GameOfLifeApp::mouseDown( MouseEvent event )
-{
-  auto mouseLoc = event.getPos();
-  mCamera.MousePress(event.isLeftDown(), mouseLoc.x, mouseLoc.y);
-}
-
-void GameOfLifeApp::mouseUp(MouseEvent event)
-{
-  auto mouseLoc = event.getPos();
-  mCamera.MousePress(event.isLeftDown(), mouseLoc.x, mouseLoc.y);
-}*/
-
-/*void GameOfLifeApp::mouseMove(MouseEvent event)
-{
-  auto mouseLoc = event.getPos();
-  mCamera.MouseMove(mouseLoc.x, mouseLoc.y, getWindowWidth(), getWindowHeight(), event.isLeft());
-}*/
 
 void GameOfLifeApp::mouseDrag(MouseEvent event)
 {
