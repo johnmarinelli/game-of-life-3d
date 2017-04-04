@@ -9,6 +9,7 @@
 #include "ComponentFactory.hpp"
 #include "Mesh.h"
 #include "EntityFactory.hpp"
+#include "Camera.hpp"
 
 using namespace ci;
 using namespace ci::app;
@@ -31,7 +32,10 @@ class GameOfLifeApp : public App {
 public:
   void setup() override;
   void keyDown(cinder::app::KeyEvent event) override;
-  void mouseDown( MouseEvent event ) override;
+  //void mouseDown(MouseEvent event) override;
+  //void mouseUp(MouseEvent event) override;
+  //void mouseMove(MouseEvent event) override;
+  void mouseDrag(MouseEvent event) override;
   void update() override;
   void draw() override;
   
@@ -44,6 +48,8 @@ public:
     GLuint view_matrix;
     GLuint mv_matrix;
   } mUniforms;
+  
+  john::Camera mCamera;
   
   john::HandleManager mHandleManager;
   john::DrawingSystem mDrawingSystem;
@@ -60,13 +66,14 @@ public:
 
 void GameOfLifeApp::setup()
 {
-  setFrameRate(2.0);
+  setFrameRate(20.0);
   john::mesh::cube::calculateCubeNormals();
   
   glm::mat4 projMatrix = glm::perspective(50.f, getWindowAspectRatio(), 0.1f, 1000.f);
-  glm::mat4 viewMatrix = glm::lookAt(glm::vec3{0,0,-50}, glm::vec3{0,0,0}, glm::vec3{0,1,0});
+  mCamera = john::Camera{glm::vec3{0,0,-50}, glm::vec3{0,0,0}, glm::vec3{0,1,0}};
+  glm::mat4 viewMatrix = mCamera.mViewMatrix;
   
-  mDrawingSystem.initialize(projMatrix, viewMatrix);
+  mDrawingSystem.initialize(projMatrix, mCamera);
 
   auto size = Display::getMainDisplay()->getSize();
   
@@ -163,19 +170,41 @@ void GameOfLifeApp::setup()
 void GameOfLifeApp::keyDown(cinder::app::KeyEvent event)
 {
   auto input = event.getChar();
+  mCamera.KeyPressed(input);
   
   switch (input) {
     default: break;
   }
 }
 
-void GameOfLifeApp::mouseDown( MouseEvent event )
+/*void GameOfLifeApp::mouseDown( MouseEvent event )
 {
+  auto mouseLoc = event.getPos();
+  mCamera.MousePress(event.isLeftDown(), mouseLoc.x, mouseLoc.y);
+}
+
+void GameOfLifeApp::mouseUp(MouseEvent event)
+{
+  auto mouseLoc = event.getPos();
+  mCamera.MousePress(event.isLeftDown(), mouseLoc.x, mouseLoc.y);
+}*/
+
+/*void GameOfLifeApp::mouseMove(MouseEvent event)
+{
+  auto mouseLoc = event.getPos();
+  mCamera.MouseMove(mouseLoc.x, mouseLoc.y, getWindowWidth(), getWindowHeight(), event.isLeft());
+}*/
+
+void GameOfLifeApp::mouseDrag(MouseEvent event)
+{
+  auto mouseLoc = event.getPos();
+  mCamera.MouseMove(mouseLoc.x, mouseLoc.y, getWindowWidth(), getWindowHeight(), event.isLeft());
 }
 
 void GameOfLifeApp::update()
 {
   mGameOfLifeSystem.perform(mHandleManager, 0.0);
+  mDrawingSystem.mViewMatrix = mCamera.mViewMatrix;
 }
 
 void GameOfLifeApp::draw()

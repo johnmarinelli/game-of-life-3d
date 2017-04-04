@@ -5,16 +5,20 @@
 #include "DrawingSystem.hpp"
 #include "HandleManager.hpp"
 #include "Entity.hpp"
+#include "Camera.hpp"
+
 namespace john {
   
-  DrawingSystem::DrawingSystem()
+  DrawingSystem::DrawingSystem() :
+    mCameraRef(nullptr),
+    mViewMatrix(glm::mat4{0.f})
   {
   }
   
-  void DrawingSystem::initialize(const glm::mat4 &projMatrix, const glm::mat4 &viewMatrix)
+  void DrawingSystem::initialize(const glm::mat4 &projMatrix, john::Camera& camera)
   {
     mProjectionMatrix = projMatrix;
-    mViewMatrix = viewMatrix;
+    mCameraRef = &camera;
   }
   
   void DrawingSystem::registerEntity(const john::Handle& handle)
@@ -23,7 +27,8 @@ namespace john {
   }
   
   void DrawingSystem::perform(const john::HandleManager& handleManager, double elapsedSeconds)
-  {    
+  {
+    mViewMatrix = mCameraRef->mViewMatrix;
     static const GLfloat one = 1.f;
     static const GLfloat bg[] = {0.f, 0.0f, 0.f, 1.f};
     
