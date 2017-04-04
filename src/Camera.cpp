@@ -76,7 +76,6 @@ namespace john {
   }
   
   void Camera::MouseMove(int x, int y, int w, int h, bool leftDown) {
-    cinder::app::console() << "Camera::MouseMove: " << leftDown;
     if (leftDown) {
       // delta
       glm::vec2 mouseDelta = glm::vec2{x,y} - mMousePosition;
