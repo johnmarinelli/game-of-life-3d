@@ -14,11 +14,9 @@ namespace john {
   public:
     DrawingSystem();
     
-    void initialize(const glm::mat4& projMatrix, john::Camera& camera);
+    void initialize(john::Camera& camera);
     void registerEntity(const john::Handle& handle);
     void perform(const john::HandleManager& handleManager, double elapsedSeconds);
-    
-    glm::mat4 mProjectionMatrix;
                     
     GLuint mProjectionMatrixHandle;
     GLuint mViewMatrixHandle;

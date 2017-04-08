@@ -13,9 +13,8 @@ namespace john {
     mCameraRef(nullptr)
   {}
   
-  void DrawingSystem::initialize(const glm::mat4 &projMatrix, john::Camera& camera)
+  void DrawingSystem::initialize(john::Camera& camera)
   {
-    mProjectionMatrix = projMatrix;
     mCameraRef = &camera;
   }
   
@@ -26,7 +25,9 @@ namespace john {
   
   void DrawingSystem::perform(const john::HandleManager& handleManager, double elapsedSeconds)
   {
+    auto projMatrix = mCameraRef->mProjectionMatrix;
     auto viewMatrix = mCameraRef->mViewMatrix;
+
     static const GLfloat one = 1.f;
     static const GLfloat bg[] = {0.f, 0.0f, 0.f, 1.f};
     
@@ -38,9 +39,9 @@ namespace john {
     glUniformMatrix4fv(mProjectionMatrixHandle,
                        1,
                        GL_FALSE,
-                       glm::value_ptr(mProjectionMatrix));
+                       glm::value_ptr(projMatrix));
     
-    auto seconds = elapsedSeconds * 0.01;
+   //auto seconds = elapsedSeconds * 0.01;
         
     for (const auto& handle : mHandles) {
       auto entityr = handleManager.get(handle);

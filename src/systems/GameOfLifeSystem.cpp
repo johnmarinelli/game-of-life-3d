@@ -93,7 +93,6 @@ namespace john {
          }
          else {
            if (neighborCount == 3) {
-             //entityState->on = true;
              deadToAlive.push_back(entityState);
            }
          }

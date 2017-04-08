@@ -67,9 +67,9 @@ void GameOfLifeApp::setup()
   john::mesh::cube::calculateCubeNormals();
   
   glm::mat4 projMatrix = glm::perspective(50.f, getWindowAspectRatio(), 0.1f, 1000.f);
-  mCamera = john::Camera{glm::vec3{0,0,-50}, glm::vec3{0,0,0}, glm::vec3{0,1,0}};
+  mCamera = john::Camera{projMatrix, glm::vec3{0,0,-50}, glm::vec3{0,0,0}, glm::vec3{0,1,0}};
   
-  mDrawingSystem.initialize(projMatrix, mCamera);
+  mDrawingSystem.initialize(mCamera);
 
   auto size = Display::getMainDisplay()->getSize();
   
