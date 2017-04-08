@@ -5,6 +5,7 @@ namespace john {
   Camera::Camera() :
   mEye(glm::vec3{0.f, 0.f, -100.f}),
   mViewMatrix(glm::lookAt(mEye, glm::vec3{0.f,0.f,0.f}, glm::vec3{0,1,0})),
+  mOriginalEye(mEye),
   mRoll(0.f),
   mYaw(0.f),
   mPitch(0.f),
@@ -14,6 +15,7 @@ namespace john {
   Camera::Camera(const glm::vec3& eye, const glm::vec3& center, const glm::vec3& up) :
   mViewMatrix(glm::lookAt(eye, center, up)),
   mEye(eye),
+  mOriginalEye(mEye),
   mCenter(center),
   mUp(up),
   mRoll(0.f),
@@ -62,6 +64,9 @@ namespace john {
         dx = 2;
         break;
       }
+      case 'r' : {
+        
+      }
       default: break;
     }
     
@@ -69,7 +74,7 @@ namespace john {
     glm::vec3 forward{mViewMatrix[0][2], mViewMatrix[1][2], mViewMatrix[2][2]};
     glm::vec3 strafe{mViewMatrix[0][0], mViewMatrix[1][0], mViewMatrix[2][0]};
     
-    mEye += (dz * forward + dx * strafe) * john::constants::CAMERA_SPEED;
+    mEye += (-dz * forward + dx * strafe) * john::constants::CAMERA_SPEED;
     
     this->UpdateView();
   }

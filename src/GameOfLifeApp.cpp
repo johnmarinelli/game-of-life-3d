@@ -92,7 +92,8 @@ void GameOfLifeApp::setup()
         
         auto positionComponent = mPositionComponentFactory.create(rotation,
                                                                   translation,
-                                                                  scaleVec, glm::mat4{1.f});
+                                                                  scaleVec,
+                                                                  glm::mat4{1.f});
         
         auto positionComponentHdl = mHandleManager.add(static_cast<void*>(positionComponent.get()), john::ComponentTypes::C_POSITION);
         entity->mComponents[john::ComponentTypes::C_POSITION] = positionComponentHdl;
