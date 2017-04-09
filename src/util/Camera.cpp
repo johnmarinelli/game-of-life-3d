@@ -44,7 +44,7 @@ namespace john {
   mYaw(0.f),
   mPitch(0.f)
   {
-    mViewMatrix = createViewMatrix(mEye, glm::vec3{0}, glm::vec3{0,1,0});
+    this->UpdateView();
   }
   
   Camera::Camera(const glm::mat4& projMatrix,
@@ -58,9 +58,9 @@ namespace john {
   mUp(up),
   mRoll(0.f),
   mYaw(0.f),
-  mPitch(0.f) 
-  {
-    mViewMatrix = createViewMatrix(mEye, center, up);
+  mPitch(0.f)
+  {   
+    this->UpdateView();
   }
   
   void Camera::UpdateView() {
@@ -122,7 +122,7 @@ namespace john {
     if (leftDown) {
       // delta
       glm::vec2 mouseDelta = glm::vec2{x,y} - mMousePosition;
-
+      
       mYaw += john::constants::MOUSE_X_SENSITIVITY * mouseDelta.x;
       mPitch += john::constants::MOUSE_Y_SENSITIVITY * mouseDelta.y;
       

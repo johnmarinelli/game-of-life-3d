@@ -63,11 +63,11 @@ public:
 
 void GameOfLifeApp::setup()
 {
-  setFrameRate(20.0);
+  setFrameRate(john::constants::FPS);
   john::mesh::cube::calculateCubeNormals();
   
-  glm::mat4 projMatrix = glm::perspective(50.f, getWindowAspectRatio(), 0.1f, 1000.f);
-  mCamera = john::Camera{projMatrix, glm::vec3{0,0,-50}, glm::vec3{0,0,0}, glm::vec3{0,1,0}};
+  glm::mat4 projMatrix = glm::perspective(100.f, getWindowAspectRatio(), 0.1f, 1000.f);
+  mCamera = john::Camera{projMatrix, glm::vec3{0,0,-100}, glm::vec3{0,0,0}, glm::vec3{0,1,0}};
   
   mDrawingSystem.initialize(mCamera);
 

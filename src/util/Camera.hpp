@@ -13,9 +13,9 @@ namespace john {
     glm::mat4 mProjectionMatrix;
 
     glm::vec3 mEye;
-    glm::vec3 mOriginalEye;
     glm::vec3 mUp;
     glm::vec3 mCenter;
+    glm::vec3 mOriginalEye;
     
     float mRoll;
     float mYaw;
