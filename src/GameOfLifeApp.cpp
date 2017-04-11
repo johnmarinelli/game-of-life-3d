@@ -58,6 +58,8 @@ public:
   john::ComponentFactory<john::PositionComponent> mPositionComponentFactory{mHandleManager};
   john::ComponentFactory<john::GridPositionComponent> mGridPositionComponentFactory{mHandleManager};
   john::ComponentFactory<john::StateComponent> mStateComponentFactory{mHandleManager};
+  
+  bool mPaused = false;
 
 };
 
@@ -173,6 +175,7 @@ void GameOfLifeApp::keyDown(cinder::app::KeyEvent event)
   mCamera.KeyPressed(input);
   
   switch (input) {
+    case ' ': mPaused = true; break;
     default: break;
   }
 }
@@ -185,7 +188,7 @@ void GameOfLifeApp::mouseDrag(MouseEvent event)
 
 void GameOfLifeApp::update()
 {
-  mGameOfLifeSystem.perform(mHandleManager, 0.0);  
+  if (!mPaused) mGameOfLifeSystem.perform(mHandleManager, 0.0);
 }
 
 void GameOfLifeApp::draw()

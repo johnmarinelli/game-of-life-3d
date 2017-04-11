@@ -39,8 +39,6 @@ namespace john {
     
   } GOL_NEIGHBOR_POSITIONS;
   
-  
-  
   class GameOfLifeSystem {
     
   public:
