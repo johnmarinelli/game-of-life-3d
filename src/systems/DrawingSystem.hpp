@@ -21,7 +21,9 @@ namespace john {
     GLuint mProjectionMatrixHandle;
     GLuint mViewMatrixHandle;
     GLuint mModelMatrixHandle;
-    GLuint mModelViewMatrixHandle;
+    GLuint mLightPositionWorldspaceHandle;
+    
+    GLfloat mLightPosition[3];
     
     john::Camera* mCameraRef;
     

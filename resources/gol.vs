@@ -7,7 +7,7 @@ layout(location = 2) in vec3 in_color;
 uniform mat4 model_matrix;
 uniform mat4 view_matrix;
 uniform mat4 proj_matrix;
-uniform mat4 mv_matrix;
+uniform vec3 light_pos_worldspace;// = vec3(0,0,100);
 
 out vec4 vs_color;
 
@@ -15,8 +15,7 @@ out vec3 position_worldspace;
 out vec3 normal_viewspace;
 out vec3 eyedirection_viewspace;
 out vec3 lightdirection_viewspace;
-
-uniform vec3 light_pos_worldspace = vec3(100,100,100);
+out vec3 lightpos_worldspace;
 
 void main() {
   mat4 mvp = proj_matrix * view_matrix * model_matrix;
@@ -37,12 +36,12 @@ void main() {
   vec3 lightposition_viewspace = (view_matrix * vec4(light_pos_worldspace, 1.0)).xyz;
   lightdirection_viewspace = lightposition_viewspace + eyedirection_viewspace;
   
+  lightpos_worldspace = light_pos_worldspace;
   
   // Normal of the the vertex, in camera space
   // Only correct if ModelMatrix does not scale the model ! Use its inverse transpose if not.
   // normal of the vertex in camera space
   normal_viewspace = (view_matrix * model_matrix * vec4(normal, 0)).xyz;
   
-  //vs_color = vec4(in_color,1.0);
   vs_color = vec4(normal, 1);
 }

@@ -88,19 +88,19 @@ namespace john {
     
     switch (key) {
       case 'w' : {
-        dz = 2;
+        dz = john::constants::CAMERA_Z_STRAFE;
         break;
       }
       case 's' : {
-        dz = -2;
+        dz = -john::constants::CAMERA_Z_STRAFE;
         break;
       }
       case 'a' : {
-        dx = -2;
+        dx = -john::constants::CAMERA_X_STRAFE;
         break;
       }
       case 'd' : {
-        dx = 2;
+        dx = john::constants::CAMERA_X_STRAFE;
         break;
       }
       case 'r' : {

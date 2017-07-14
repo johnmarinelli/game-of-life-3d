@@ -10,8 +10,13 @@
 namespace john {
   
   DrawingSystem::DrawingSystem() :
-    mCameraRef(nullptr)
-  {}
+    mCameraRef(nullptr),
+    mLightPositionWorldspaceHandle(-1)
+  {
+    mLightPosition[0] = 0.f;
+    mLightPosition[1] = 0.f;
+    mLightPosition[2] = 100.f;
+  }
   
   void DrawingSystem::initialize(john::Camera& camera)
   {
@@ -40,8 +45,10 @@ namespace john {
                        1,
                        GL_FALSE,
                        glm::value_ptr(projMatrix));
-    
-   //auto seconds = elapsedSeconds * 0.01;
+ 
+   glUniform3fv(mLightPositionWorldspaceHandle, 1, mLightPosition);
+   
+    //auto seconds = elapsedSeconds * 0.01;
         
     for (const auto& handle : mHandles) {
       auto entityr = handleManager.get(handle);
@@ -64,8 +71,7 @@ namespace john {
         auto mvMatrix = viewMatrix * modelMatrix;
       
         glUniformMatrix4fv(mModelMatrixHandle, 1, GL_FALSE, glm::value_ptr(modelMatrix));
-        glUniformMatrix4fv(mModelViewMatrixHandle, 1, GL_FALSE, glm::value_ptr(mvMatrix));
-      
+       
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_SHORT, 0);
       }
     }

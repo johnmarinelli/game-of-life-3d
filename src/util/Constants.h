@@ -19,7 +19,9 @@ namespace john {
     const float CAMERA_SPEED = 0.12;
     const float MOUSE_X_SENSITIVITY = 0.0005f;
     const float MOUSE_Y_SENSITIVITY = 0.0005f;
-    const float FPS = 20.f;
+    const int CAMERA_X_STRAFE = 10;
+    const int CAMERA_Z_STRAFE = 10;
+    const float FPS = 5.f;
     enum { MAX_HANDLES = 4096 };
     
   }

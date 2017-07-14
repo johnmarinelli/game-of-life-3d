@@ -5,10 +5,10 @@ in vec3 position_worldspace;
 in vec3 normal_viewspace;
 in vec3 eyedirection_viewspace;
 in vec3 lightdirection_viewspace;
+in vec3 lightpos_worldspace;
 out vec4 color;
 
-uniform mat4 mv_matrix;
-uniform vec3 light_pos_worldspace = vec3(100,100,100);
+//uniform vec3 light_pos_worldspace;
 
 void main() {
   // light emission properties
@@ -28,7 +28,7 @@ void main() {
   float materialSpecularPower = 128.0;
   
   // distance from light
-  float distance = length(light_pos_worldspace - position_worldspace);
+  float distance = length(lightpos_worldspace - position_worldspace);
   
   // normal of the computed fragment in view space
   vec3 n = normalize(normal_viewspace);

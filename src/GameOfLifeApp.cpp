@@ -10,6 +10,7 @@
 #include "Mesh.h"
 #include "factories/EntityFactory.hpp"
 #include "Camera.hpp"
+#include "cinder/params/Params.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -39,13 +40,6 @@ public:
   gl::GlslProgRef mGlsl;
   GLuint mCubeVertices, mCubeColors, mCubeNormals, mCubeIBO, mVao;
   
-  struct {
-    GLuint model_matrix;
-    GLuint proj_matrix;
-    GLuint view_matrix;
-    GLuint mv_matrix;
-  } mUniforms;
-  
   john::Camera mCamera;
   
   john::HandleManager mHandleManager;
@@ -59,13 +53,13 @@ public:
   john::ComponentFactory<john::GridPositionComponent> mGridPositionComponentFactory{mHandleManager};
   john::ComponentFactory<john::StateComponent> mStateComponentFactory{mHandleManager};
   
-  bool mPaused = false;
-
+  bool mPaused = true;
 };
 
 void GameOfLifeApp::setup()
 {
   setFrameRate(john::constants::FPS);
+  
   john::mesh::cube::calculateCubeNormals();
   
   glm::mat4 projMatrix = glm::perspective(100.f, getWindowAspectRatio(), 0.1f, 1000.f);
@@ -107,11 +101,11 @@ void GameOfLifeApp::setup()
         // gol state system
         auto stateComponent = mStateComponentFactory.create();
         
-        if (i == 1 && j == 1) stateComponent->on = true;
-        if (i == 2 && j == 2) stateComponent->on = true;
-        if (i == 3 && j == 0) stateComponent->on = true;
-        if (i == 3 && j == 1) stateComponent->on = true;
-        if (i == 3 && j == 2) stateComponent->on = true;
+        if (i == 1 && j == 1 && k == 1) stateComponent->on = true;
+        if (i == 2 && j == 2 && k == 1) stateComponent->on = true;
+        if (i == 3 && j == 0 && k == 1) stateComponent->on = true;
+        if (i == 3 && j == 1 && k == 1) stateComponent->on = true;
+        if (i == 3 && j == 2 && k == 1) stateComponent->on = true;
         
         auto stateComponentHdl = mHandleManager.add(static_cast<void*>(stateComponent.get()), john::ComponentTypes::C_STATE);
         
@@ -125,15 +119,12 @@ void GameOfLifeApp::setup()
     }
   }
   
-  mGlsl = gl::GlslProg::create(loadResource("gol.vs"), loadResource("gol.fs"));
-  
-  mUniforms.model_matrix = glGetUniformLocation(mGlsl->getHandle(), "model_matrix");
-  mUniforms.mv_matrix = glGetUniformLocation(mGlsl->getHandle(), "mv_matrix");
-  
+  mGlsl = gl::GlslProg::create(loadResource("gol.vs"), loadResource("gol.fs"));  
+
   mDrawingSystem.mProjectionMatrixHandle = glGetUniformLocation(mGlsl->getHandle(), "proj_matrix");
   mDrawingSystem.mViewMatrixHandle = glGetUniformLocation(mGlsl->getHandle(), "view_matrix");
   mDrawingSystem.mModelMatrixHandle = glGetUniformLocation(mGlsl->getHandle(), "model_matrix");
-  mDrawingSystem.mModelViewMatrixHandle = glGetUniformLocation(mGlsl->getHandle(), "mv_matrix");
+  mDrawingSystem.mLightPositionWorldspaceHandle = glGetUniformLocation(mGlsl->getHandle(), "light_pos_worldspace");
   
   glGenVertexArrays(1, &mVao);
   glBindVertexArray(mVao);
@@ -167,6 +158,7 @@ void GameOfLifeApp::setup()
   glBufferData(GL_ARRAY_BUFFER, sizeof(cube_colors), cube_colors, GL_STATIC_DRAW);
   glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
   glEnableVertexAttribArray(2);
+
 }
 
 void GameOfLifeApp::keyDown(cinder::app::KeyEvent event)
@@ -175,7 +167,7 @@ void GameOfLifeApp::keyDown(cinder::app::KeyEvent event)
   mCamera.KeyPressed(input);
   
   switch (input) {
-    case ' ': mPaused = true; break;
+    case ' ': mPaused = !mPaused; break;
     default: break;
   }
 }
@@ -194,6 +186,7 @@ void GameOfLifeApp::update()
 void GameOfLifeApp::draw()
 {
   glViewport(0, 0, getWindowWidth(), getWindowHeight());
+
   mGlsl->bind();
   auto elapsed = getElapsedSeconds();
   mDrawingSystem.perform(mHandleManager, elapsed);
